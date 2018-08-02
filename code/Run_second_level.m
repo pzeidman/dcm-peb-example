@@ -9,22 +9,24 @@ X_labels = dm.labels;
 GCM=load('../analyses/GCM_full.mat');
 GCM=GCM.GCM;
 
+% PEB settings
 M = struct();
-M.alpha  = 1;
-M.beta   = 16;
-M.hE     = 0;
-M.hC     = 1/16;
 M.Q      = 'all';
 M.X      = X;
 M.Xnames = X_labels;
-%% Build PEB (B,C)
-[PEB_BC,RCM_BC] = spm_dcm_peb(GCM(:,1),M,{'B','C'});
+M.maxit  = 256;
+%% Build PEB (using B,C parameters)
+[PEB_BC,RCM_BC] = spm_dcm_peb(GCM,M,{'B','C'});
 save('../analyses/PEB_BC.mat','PEB_BC','RCM_BC');
-%% Automatic search (B,C)
+%% Automatic search
 BMA_BC = spm_dcm_peb_bmc(PEB_BC);
-save('../analyses/BMA_search_B.mat','BMA_BC');          
+save('../analyses/BMA_search_B.mat','BMA_BC');     
 %% Hypothesis-based analysis (B,C)
+
+% Load estimated PEB
 load('../analyses/PEB_BC.mat');
+
+% Load template models
 templates = load('../analyses/GCM_templates.mat');
 
 % Run model comparison
@@ -39,20 +41,25 @@ BMA.Kname(BMA.K(69,:)==1)
 save('../analyses/BMA_BC_112models.mat','BMA','BMR');
 
 %% Family analysis
-[BMA_fam_task,fam_task] = spm_dcm_peb_bmc_fam(BMA,BMR,task_family,'NONE');
 
-[BMA_fam_c,fam_c]       = spm_dcm_peb_bmc_fam(BMA,BMR,c_family,'NONE');
+% Load the result from the comparison of 112 reduced models
+load('../analyses/BMA_BC_112models.mat');
 
-[BMA_fam_b_dv,fam_b_dv] = spm_dcm_peb_bmc_fam(BMA,BMR,b_dv_family,'NONE');
+% Compare families
+[BMA_fam_task,fam_task] = spm_dcm_peb_bmc_fam(BMA, BMR, templates.task_family, 'ALL');
 
-[BMA_fam_b_lr,fam_b_lr] = spm_dcm_peb_bmc_fam(BMA,BMR,b_lr_family,'NONE');
+[BMA_fam_c,fam_c]       = spm_dcm_peb_bmc_fam(BMA, BMR, templates.c_family, 'NONE');
+
+[BMA_fam_b_dv,fam_b_dv] = spm_dcm_peb_bmc_fam(BMA, BMR, templates.b_dv_family, 'NONE');
+
+[BMA_fam_b_lr,fam_b_lr] = spm_dcm_peb_bmc_fam(BMA, BMR, templates.b_lr_family, 'NONE');
 
 save('../analyses/BMA_fam_task.mat','BMA_fam_task','fam_task');
 save('../analyses/BMA_fam_c.mat','BMA_fam_c','fam_c');
 save('../analyses/BMA_fam_b_dv.mat','BMA_fam_b_dv','fam_b_dv');
 save('../analyses/BMA_fam_b_lr.mat','BMA_fam_b_lr','fam_b_lr');
 %% LOO
-[qE,qC,Q] = spm_dcm_loo(GCM(:,1),M,{'B(4,4,3)'});
+[qE,qC,Q] = spm_dcm_loo(GCM,M,{'B(4,4,3)'});
 save('../analyses/LOO_rdF_words.mat','qE','qC','Q');
 %% Correlate rdF
 B = cellfun(@(x)x.Ep.B(4,4,3),GCM(:,1));

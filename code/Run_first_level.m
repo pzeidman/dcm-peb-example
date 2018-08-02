@@ -1,9 +1,12 @@
 %% Settings
-nsubjects = 60;
-TR = 3.6;
-TE = 0.05;
 
-nregions    = 4;
+% MRI scanner settings
+TR = 3.6;   % Repetition time (secs)
+TE = 0.05;  % Echo time (secs)
+
+% Experiment settings
+nsubjects = 60;
+nregions    = 4; 
 nconditions = 3;
 
 % Index of each condition in the DCM
@@ -13,10 +16,6 @@ TASK=1; PICTURES=2; WORDS=3;
 lvF=1; ldF=2; rvF=3; rdF=4;
 
 %% Specify DCMs (one per subject)
-
-% Whether to include each condition from the design matrix
-% (Task, Pictures, Words)
-include = [1 1 1]';
 
 % A-matrix (on / off)
 a = ones(nregions,nregions);
@@ -60,6 +59,10 @@ for subject = 1:nsubjects
     % Move to output directory
     cd(glm_dir);
     
+    % Select whether to include each condition from the design matrix
+    % (Task, Pictures, Words)
+    include = [1 1 1]';    
+    
     % Specify. Corresponds to the series of questions in the GUI.
     s = struct();
     s.name       = 'full';
@@ -77,7 +80,7 @@ for subject = 1:nsubjects
     s.d          = d;
     DCM = spm_dcm_specify(SPM,xY,s);
     
-    % Return to script dir
+    % Return to script directory
     cd(start_dir);
 end
 
@@ -104,7 +107,7 @@ end
 
 % Collate & estimate
 if tf
-    % Collate all subjects' DCM filenames
+    % Character array -> cell array
     GCM = cellstr(dcms);
     
     % Filenames -> DCM structures
@@ -201,10 +204,13 @@ b_lr_fam_names = {'Both','Left','Right'};
 % Make a DCM for each mixture of these factors
 % -------------------------------------------------------------------------
 
-% Load an example DCM
+% Load and unpack an example DCM
 GCM_full = load('../analyses/GCM_full.mat');
 GCM_full = spm_dcm_load(GCM_full.GCM);
 DCM_template = GCM_full{1,1};
+a = DCM_template.a;
+d = DCM_template.d;
+options = DCM_template.options;
 
 % Output cell array for new models
 GCM_templates = {};
@@ -228,11 +234,11 @@ for t = 1:length(b_task_fam)
 
                 % Build minimal DCM
                 DCM = struct();
-                DCM.a       = DCM_template.a;
+                DCM.a       = a;
                 DCM.b       = b;
                 DCM.c       = c;
-                DCM.d       = DCM_template.d;
-                DCM.options = DCM_template.options;
+                DCM.d       = d;
+                DCM.options = options;
                 DCM.name    = name;                    
                 GCM_templates{1,m} = DCM;
 
@@ -275,3 +281,7 @@ end
 GCM = GCM_templates;
 save('../analyses/GCM_templates.mat','GCM',...
     'task_family','b_dv_family','b_lr_family','c_family');
+
+%% Run diagnostics
+load('../analyses/GCM_full.mat');
+spm_dcm_fmri_check(GCM);
