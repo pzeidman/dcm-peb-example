@@ -1,6 +1,8 @@
 # Step-by-step guide to DCM for fMRI and PEB
 This step-by-step guide walks through performing a DCM for fMRI analysis and testing hypotheses at the group level using PEB. 
 
+**This is a work in progress awaiting review.**
+
 ## The paper
 You may wish to start with the theory paper, which explains how each step in the analysis works:
 
