@@ -126,7 +126,7 @@ We will now specify a DCM for the first subject, matching the design in Figure \
 \end{itemize}
 
 \subsubsection{Alternative DCM} \label{GUI_altDCM}
-Hypotheses are tested in DCM by switching off certain parameters (e.g. connections) and seeing how this effects the model evidence (free energy). In the paper we had 112 alternative models, however for specifying large numbers of models you are best off writing a script, as described in the second part of this guide. To demonstrate DCM using only the GUI, we will  specify just one alternative model to ask the question:  is left dorsal frontal cortex (ldF) needed to explain individual differences in laterality index (LI)? To test this, we'll specify a reduced model where modulatory parameters relating to region ldF have been switched off, as illustrated in Figure \ref{Fig_dcm_spec_2models}, right.
+Hypotheses are tested in DCM by switching off certain parameters (e.g. connections) and seeing how this effects the model evidence (free energy). In the paper we had 112 alternative models, however, to specify large numbers of models it is best to write a script, as described in the second part of this guide. To demonstrate DCM using only the GUI, we will  specify just one alternative model to ask the question:  is left dorsal frontal cortex (ldF) needed to explain individual differences in laterality index (LI)? To test this, we'll specify a reduced model where modulatory parameters relating to region ldF have been switched off, as illustrated in Figure \ref{Fig_dcm_spec_2models}, right.
 
 \begin{figure}[ht]
 \begin{center}
@@ -633,7 +633,16 @@ GCM = spm_dcm_fit(GCM,use_parfor);
 \end{lstlisting}
 
 \subsubsection{Specifying reduced DCMs}
-For this analysis we will also specify a set of 112 alternative models to compare, based on our hypotheses. These do not need to be estimated - they just tell the software which connections to switch on and off for each candidate model. The script supplied with this tutorial creates 112 minimal DCMs containing only the required fields: a,b,c,d,name and options, and puts these DCMs in a cell array with a single row.
+Following the paper, we will test 4 experimental questions:
+
+\begin{enumerate}
+    \item Did dorsal regions drive ventral regions, or vice versa? [Options: both, dorsal, ventral, neither]
+    \item Was the network modulated by picture stimuli, word stimuli, both or neither?  [Options: both, words, pictures]
+    \item Did the stimuli modulate dorsal or ventral regions? [Options: both, dorsal, ventral]
+    \item Did the stimuli modulate left or right regions, both or neither? [Options: both, left, right]
+\end{enumerate}
+
+To try all combinations of these options, we will need 4x3x3x3=108 models. Additionally, we'll include 4 `null' models, 1 for each option Question 1, which have no modulatory inputs by task. That gives a total of 112 models alternative models to compare, based on our hypotheses. These candidate DCMs will not need to be estimated - we will just use them to tell the software which connections to switch on and off for each candidate group-level PEB model. The script supplied with this tutorial creates 112 minimal DCMs containing only the required fields: a,b,c,d,name and options, and it puts these DCMs in a cell array with a single row (saved in analyses/GCM\_templates.mat).
 
 \subsubsection{Diagnostics}
 Having completed the estimation of the first-level DCMs, it is a good time to perform some diagnostics on the models. To inspect the models, run:
