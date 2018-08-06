@@ -8,4 +8,4 @@ You may wish to start with the theory paper, which explains how each step in the
 2. A tutorial on group effective connectivity analysis, part 2: PEB
 
 ## The data and step-by-step guide
-[Click here to view the latest version of the PDF guide](https://github.com/pzeidman/dcm-peb-example/blob/master/docs/DCM-PEB-Tutorial.pdf) and get the accompanying dataset [here](https://github.com/pzeidman/dcm-peb-example/archive/master.zip).
+[Click here to view the latest version of the PDF guide](https://github.com/pzeidman/dcm-peb-example/raw/master/docs/DCM-PEB-Tutorial.pdf) and get the accompanying dataset [here](https://github.com/pzeidman/dcm-peb-example/archive/master.zip).
