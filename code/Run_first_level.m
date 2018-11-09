@@ -5,7 +5,7 @@ TR = 3.6;   % Repetition time (secs)
 TE = 0.05;  % Echo time (secs)
 
 % Experiment settings
-nsubjects = 60;
+nsubjects   = 60;
 nregions    = 4; 
 nconditions = 3;
 
