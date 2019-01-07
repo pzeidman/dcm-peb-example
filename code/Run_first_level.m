@@ -119,7 +119,7 @@ if tf
     % Save estimated GCM
     save('../analyses/GCM_full.mat','GCM');
 end
-%% Specify 112 alternative models for 1 subject
+%% Specify 28 alternative models structures
 %  These will be templates for the group analysis
 
 % Define B-matrix for each family (factor: task)
@@ -138,31 +138,6 @@ b_task_fam{3}(:,:,1) = ones(4);  % Objects
 b_task_fam{3}(:,:,2) = zeros(4); % Words
 
 task_fam_names = {'Both','Words','Objects'};
-
-% Define C-matrix for each family (factor: driving input)
-% -------------------------------------------------------------------------
-% Both
-c_fam{1} = [1 0 0;
-            1 0 0;
-            1 0 0;
-            1 0 0];
-      
-% Dorsal
-c_fam{2} = [0 0 0;
-            1 0 0;
-            0 0 0;
-            1 0 0];
-      
-% Ventral
-c_fam{3}  = [1 0 0;
-             0 0 0;
-             1 0 0;
-             0 0 0];
-         
-% None
-c_fam{4}  = zeros(4,3);
-
-c_fam_names = {'Both','Dorsal','Ventral','None'};
 
 % Define B-matrix for each family (factor: dorsal-ventral)
 % -------------------------------------------------------------------------
@@ -209,6 +184,7 @@ GCM_full = load('../analyses/GCM_full.mat');
 GCM_full = spm_dcm_load(GCM_full.GCM);
 DCM_template = GCM_full{1,1};
 a = DCM_template.a;
+c = DCM_template.c;
 d = DCM_template.d;
 options = DCM_template.options;
 
@@ -217,70 +193,64 @@ GCM_templates = {};
 
 m = 1;
 for t = 1:length(b_task_fam)
-    for dr = 1:length(c_fam)
-        for dv = 1:length(b_dv_fam)
-            for lr = 1:length(b_lr_fam)
+    for dv = 1:length(b_dv_fam)
+        for lr = 1:length(b_lr_fam)
 
-                % Prepare B-matrix
-                b = zeros(4,4,3);
-                b(:,:,2:3) = b_dv_fam{dv} & b_lr_fam{lr} & b_task_fam{t};
+            % Prepare B-matrix
+            b = zeros(4,4,3);
+            b(:,:,2:3) = b_dv_fam{dv} & b_lr_fam{lr} & b_task_fam{t};
 
-                % Prepare C-matrix
-                c = c_fam{dr};
+            % Prepare model name
+            name = sprintf('Task: %s, Dorsoventral: %s, Hemi: %s',...
+                task_fam_names{t}, b_dv_fam_names{dv}, b_lr_fam_names{lr});
 
-                % Prepare model name
-                name = sprintf('Task: %s, Driving: %s, Dorsoventral: %s, Hemi: %s',...
-                    task_fam_names{t}, c_fam_names{dr}, b_dv_fam_names{dv}, b_lr_fam_names{lr});
+            % Build minimal DCM
+            DCM = struct();
+            DCM.a       = a;
+            DCM.b       = b;
+            DCM.c       = c;
+            DCM.d       = d;
+            DCM.options = options;
+            DCM.name    = name;                    
+            GCM_templates{1,m} = DCM;
 
-                % Build minimal DCM
-                DCM = struct();
-                DCM.a       = a;
-                DCM.b       = b;
-                DCM.c       = c;
-                DCM.d       = d;
-                DCM.options = options;
-                DCM.name    = name;                    
-                GCM_templates{1,m} = DCM;
+            % Record the assignment of this model to each family
+            task_family(m) = t;
+            b_dv_family(m) = dv;
+            b_lr_family(m) = lr;
+            m = m + 1;
 
-                % Record the assignment of this model to each family
-                task_family(m) = t;
-                c_family(m)    = dr;
-                b_dv_family(m) = dv;
-                b_lr_family(m) = lr;
-                m = m + 1;
-                
-            end
         end
     end
 end
 
-% Add a null model for each level of the driving inputs factor
-for dr = 1:length(c_fam)
-    b = zeros(4);
-    c = c_fam{dr};
+% Add a null model with no modulation
+% -------------------------------------------------------------------------
+b = zeros(4);
+c = [1 0 0;
+     1 0 0;
+     1 0 0;  
+     1 0 0];
+name = 'Task: None';
 
-    name = sprintf('Task: %s Modulation: None', task_fam_names{t});
+DCM.b(:,:,2) = b;
+DCM.b(:,:,3) = b;
+DCM.c        = c;
+DCM.name     = name;
 
-    DCM.b(:,:,2) = b;
-    DCM.b(:,:,3) = b;
-    DCM.c        = c;
-    DCM.name     = name;
+GCM_templates{1,m} = DCM;
 
-    GCM_templates{1,m} = DCM;
+% Record the assignment of this model to each family
+b_dv_family(m) = length(b_dv_fam)+1;
+b_lr_family(m) = length(b_lr_fam)+1;
+task_family(m) = length(b_task_fam)+1;
 
-    % Record the assignment of this model to each family
-    c_family(m)    = dr;
-    b_dv_family(m) = length(b_dv_fam)+1;
-    b_lr_family(m) = length(b_lr_fam)+1;
-    task_family(m) = length(b_task_fam)+1;
-
-    m = m + 1;    
-end
+m = m + 1;    
 
 % Save
 GCM = GCM_templates;
 save('../analyses/GCM_templates.mat','GCM',...
-    'task_family','b_dv_family','b_lr_family','c_family');
+    'task_family','b_dv_family','b_lr_family');
 
 %% Run diagnostics
 load('../analyses/GCM_full.mat');

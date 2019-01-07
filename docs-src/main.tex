@@ -19,7 +19,7 @@
 \graphicspath{ {./} }
 \title{DCM PEB Example}
 \author{Peter Zeidman}
-\date{July 2018}
+\date{January 2019}
     
 \usepackage{caption}
 \DeclareCaptionFont{white}{\color{white}}
@@ -35,15 +35,17 @@
 \tableofcontents
 
 \section{Introduction}
-This tutorial introduces group-level connectivity analysis with DCM for fMRI and PEB. We'll use data from a previously published experiment (Seghier et al., Cerebral Cortex, 2011) investigating the connectivity underlying individual differences in brain lateralisation. 
+This tutorial introduces group-level connectivity analysis with DCM for fMRI and PEB. We'll use data from a previously published experiment (Seghier et al., Cerebral Cortex, 2011) which investigated the functional circuitry underlying individual differences in brain laterality. 
 
-\subsection{The task and hypotheses}
-While undergoing fMRI, 60 subjects were presented with visual stimuli, which were either pictures or words, arranged in triads. On each trial, subjects had to decide whether one item was semantically related to the other two. On baseline trials, subjects had to decide whether one item was perceptually related to the other two. There were therefore two experimental factors at the within-subject level: stimulus type (words or pictures) and task (semantic or perceptual matching). There was also a single factor at the between-subject level: Laterality Index (LI). The aim of the experiment was to identify the specific connections which underlie individual differences in LI.
+\subsection{The hypothesis and task}
+When people perform language tasks, there is asymmetry in the level of response of left and right frontal brain regions. This is often summarised by a score called the Laterality Index (LI). The LI varies across people, and the hypothesis of this experiment was that individual differences in LI could be explained by differences in the connectivity of specific frontal brain regions. 
+
+To address this, 60 subjects underwent fMRI scanning. On each trial of the experiment, subjects were presented with three visual stimuli, which were either pictures or words. Subjects had to decide whether one item was semantically related to the other two. There were also baseline trials, during which subjects had to decide whether one item was perceptually related to the other two. There were therefore two experimental factors at the within-subject level: stimulus type (words or pictures) and task (semantic or perceptual matching). The between-subject factor was LI, which is the focus of our analysis. 
 
 \subsection{Model design}
-We will model these data using a four region Dynamic Causal model (DCM), shown in Figure \ref{Fig_intro_network}. This will include four brain regions: left ventral Frontal cortex (lvF), left dorsal Frontal cortex (ldF), right ventral Frontal cortex (rvF) and right dorsal Frontal cortex (rdF). At the onset of each trial, the network is `pinged' by the driving input (arrows labelled C in Figure  \ref{Fig_intro_network}) and activity flows around the network. Each region's sensitivity to inputs from the rest of network is modulated by Picture stimuli and Word stimuli. These modulatory effects are quantified by parameters in matrix B of the neural model. The neural model also has parameters which quantify the sensitivity of each region to driving input  (i.e. the `ping' of activity for each trial), quantified in parameter matrix C. 
+We will model these data using a four region Dynamic Causal model (DCM), shown in Figure \ref{Fig_intro_network}. This will include four brain regions: left ventral Frontal cortex (lvF), left dorsal Frontal cortex (ldF), right ventral Frontal cortex (rvF) and right dorsal Frontal cortex (rdF). These regions were identified in an initial SPM analysis. At the onset of each trial, the network is `pinged' by the driving input (blue dotted arrows labelled C in Figure  \ref{Fig_intro_network}) and activity flows around the network. Each region's sensitivity to inputs from the rest of network is modulated by Pictures and Words (red and green lines respectively). These modulatory effects are quantified by parameters in matrix B of the neural model. The neural model also has parameters which quantify the sensitivity of each region to driving input (i.e. the `ping' of activity for each trial), quantified in parameter matrix C. 
 
-The initial step of performing an SPM analysis and extracting timeseries from each of the four brain regions has already been done. We will start by specifying the DCM network model for every subject. We will then take the B and C parameters to the group level and test hypotheses about the commonalities and differences across subjects.
+The initial steps - performing an SPM analysis and extracting timeseries - has already been done for you. We will start by specifying the DCM network model for every subject. We will then take the modulatory parameters (B) and driving input parameters (C) to the group level and test hypotheses about the commonalities and differences across subjects.
 
 \begin{figure}[ht]
 \begin{center}
@@ -53,20 +55,17 @@ The initial step of performing an SPM analysis and extracting timeseries from ea
 \end{figure}
 
 \section{Getting the data}
-The data are available to download from \href{https://github.com/pzeidman/dcm-peb-example/}{Github}. After downloading the dataset, save it in a convenient location and ensure it is on your Matlab path. 
-\section{Analysis using the GUI}
+The data are available to download from \href{https://github.com/pzeidman/dcm-peb-example/archive/master.zip}{Github}. After downloading the dataset, save it in a convenient location, unzip it and change the Matlab working directory to the location of the files (you should see a file named design\_matrix.mat on the left hand side of your Matlab window).
 
+\section{Analysis using the GUI}
 There are two ways to use DCM: via the Graphical User Interface (GUI), or using scripts. We will first walk through an entire analysis using the GUI, as this is a good place to start if you haven't used DCM before. We'll then walk through the scripting approach, which will also enable us to demonstrate working with large model spaces involving families of models.
 
 \subsection{First level analysis: DCM for fMRI}
-
 \subsubsection{DCM Specification} \label{GUI_specification}
-
 We will now specify a DCM for the first subject, matching the design in Figure \ref{Fig_intro_network}.
-
 \begin{itemize}
     
-\item In Matlab, use the file selector on the left hand side to go into the GLM folder for subject 1. i.e. \textbackslash{GLM}\textbackslash{sub-01}\textbackslash
+\item In Matlab, use the file selector on the left hand side to change the working directory to the GLM folder for subject 1. i.e. \textbackslash{GLM}\textbackslash{sub-01}\textbackslash
 
 \item Launch SPM by typing: spm fmri and press enter.
 
@@ -103,7 +102,7 @@ We will now specify a DCM for the first subject, matching the design in Figure \
 \end{center}
 \end{figure}
 
-\item Next you are asked about each of the experimental inputs, starting with Task. The buttons on the left are the driving inputs (matrix \(C\)), and the buttons on the right are the modulatory inputs (matrix \(B\)) which increase or decrease the strength of particular connections. The connections you switched off in the previous step are hidden. Set Task to drive all regions by selecting the button on the left hand side, as shown in Figure \ref{Fig_dcm_spec_Task} and then press done.
+\item Next you are asked about each of the experimental inputs, starting with Task. The buttons on the left are the driving inputs (matrix \(C\)), and the buttons on the right are the modulatory inputs (matrix \(B\)) which increase or decrease the strength of particular connections. The connections you switched off in the previous step are hidden. Set Task to drive all regions by selecting the buttons on the left hand side, as shown in Figure \ref{Fig_dcm_spec_Task} and then press done.
 
 \begin{figure}[ht]
 \begin{center}
@@ -112,7 +111,7 @@ We will now specify a DCM for the first subject, matching the design in Figure \
 \end{center}
 \end{figure}
 
-\item Next you are asked about Pictures. We'll allow this experimental condition to modulate connections rather than serve as driving inputs. Using the buttons on the right, click the four buttons on the leading diagonal. This will allow Pictures to modulate the self-connections of each region as shown in Figure \ref{Fig_dcm_spec_Pictures_Words} (top), then press done.
+\item Next you are asked about Pictures. We'll allow this experimental condition to modulate specific connections, rather than serve as driving inputs. Using the buttons on the right, click the four buttons on the leading diagonal. This will allow Pictures to modulate the self-connections of each region as shown in Figure \ref{Fig_dcm_spec_Pictures_Words} (top), then press done.
 
 \item Finally, you are asked about the Words condition, which we'll also allow to modulate each region's self-connection. Set the buttons as shown in Figure \ref{Fig_dcm_spec_Pictures_Words} (bottom), then press done. You will receive a polite `thank you' and a file called DCM\_full.mat will have been created in this subject's GLM directory.
 
@@ -126,7 +125,7 @@ We will now specify a DCM for the first subject, matching the design in Figure \
 \end{itemize}
 
 \subsubsection{Alternative DCM} \label{GUI_altDCM}
-Hypotheses are tested in DCM by switching off certain parameters (e.g. connections) and seeing how this effects the model evidence (free energy). In the paper we had 112 alternative models, however, to specify large numbers of models it is best to write a script, as described in the second part of this guide. To demonstrate DCM using only the GUI, we will  specify just one alternative model to ask the question:  is left dorsal frontal cortex (ldF) needed to explain individual differences in laterality index (LI)? To test this, we'll specify a reduced model where modulatory parameters relating to region ldF have been switched off, as illustrated in Figure \ref{Fig_dcm_spec_2models}, right.
+Hypotheses are tested in DCM by switching off certain parameters (e.g. connections) and seeing how this effects the model evidence (approximated by the free energy). In the paper we had 112 alternative models, however, to specify large numbers of models it is best to write a Matlab script, which is detailed in the second part of this guide. To demonstrate DCM using only the GUI, we will  specify just one alternative model so that we can ask the question: is left dorsal frontal cortex (ldF) needed to explain individual differences in laterality index (LI)? To test this, we'll specify a reduced model where modulatory parameters relating to region ldF have been switched off, as illustrated in Figure \ref{Fig_dcm_spec_2models}, right.
 
 \begin{figure}[ht]
 \begin{center}
@@ -143,11 +142,13 @@ Hypotheses are tested in DCM by switching off certain parameters (e.g. connectio
     \item Click yes to include Task, Pictures and Words
     \item For VOI timings, type 3.6  3.6  3.6  3.6 and press enter. 
     \item For Echo Time, type 0.05 and press enter.
-    \item Click the buttons: bilinear, one, no, yes, timeseries.
+    \item Click the buttons as follows. Modulatory effects: bilinear, states per region: one, stochastic effects: no, centre input: yes, fit timeseries or CSD: timeseries.
     \item Switch on A-matrix connections as per Figure \ref{Fig_dcm_spec_A}.
     \item Set Task to be the driving input for all regions, as per Figure \ref{Fig_dcm_spec_Task} and press done.
-    \item Unlike before, set the effects of Pictures and Words to modulate the self-connections EXCEPT for region ldF, which we'll switch off, as per Figure \ref{Fig_dcm_spec_no_ldF}.
+    \item Unlike before, set the effects of Pictures and Words to modulate the self-connections EXCEPT for region ldF, which we'll switch off, as per Figure \ref{Fig_dcm_spec_no_ldF}. Then press done.
 \end{itemize}
+
+A second DCM will have been created for this subject named DCM\_no\_ldF\_modulation.mat.
 
 \begin{figure}[ht]
 \begin{center}
@@ -158,33 +159,33 @@ Hypotheses are tested in DCM by switching off certain parameters (e.g. connectio
 
 \subsubsection{Replicating across subjects} \label{GUI_replicating}
 
-Having specified two DCMs for a single subject, we can now use these as templates to specify the same two DCMs for every subject. All subjects' models will be the same, except for the timeseries and timing of the experimental input.
+Having specified two DCMs for a single subject, we can now use these as templates to specify the same two DCMs for every subject. All subjects' models will be the same, except the timeseries and timing of the experimental input, which will be customized for each subject.
 
 \begin{itemize}
 
-\item In the main SPM window (type spm fmri if it's not visible), click Batch.
+\item In the main SPM window, click Batch (if the main SPM windows isn't visisble, launch it by typing: spm fmri and press enter).
 
 \item From the menu at the top of the Batch Editor, click SPM $\rightarrow$ DCM $\rightarrow$ DCM specification $\rightarrow$ DCM for fMRI $\rightarrow$ Specify group. Fill in the batch as follows (also shown in Figure \ref{Fig_batch_specify_group}):
 
 \begin{itemize}
     
 
-\item Output directory - double click Output directory to bring up the file selector. Then click the two little dots (..) on the left hand side twice, to go up two directories, and single click analyses on the right hand side. Then click Done.
+\item Output directory - double click Output directory to bring up the file selector. We will choose to store the group DCM file (GCM) in a folder called \lq analyses\rq. Click the two little dots (..) on the left hand side twice, to go up two directories, and single click \lq analyses\rq on the right hand side. Then press Done.
 
-\item Output name - type two\_models and press OK.
+\item Output name - double click, then type two\_models and press OK.
 
-\item Full DCM - in the file selector, select the full DCM we made earlier for subject 1. It is named DCM\_full.mat . Select this on the right hand side, then press Done.
+\item Full DCM - double click, then in the file selector, select the full DCM we made earlier for subject 1. It is named DCM\_full.mat . Select this on the right hand side, then press Done.
 
-\item Alternative DCMs - select the reduced DCM (DCM\_no\_ldF\_modulation.mat) we created earlier and press Done.
+\item Alternative DCMs - double click, then select the reduced DCM (DCM\_no\_ldF\_modulation.mat) we created earlier and press Done.
 
-\item SPM.mat files - select all subjects' SPM.mat files. To do this, in the file selector, navigate to the GLM directory (click .. on the left hand side). You should now see a list of all subjects on the left hand side. Press the small `Rec' button. This will search through all subjects and pick out their SPM.mat files. Check that 60 are selected at the bottom of the file selector window and press Done.
+\item SPM.mat files - We will now select all subjects' SPM.mat files, which contain the timing information for each subject. Double click, then in the file selector, navigate to the GLM directory (click .. on the left hand side). You should now see a list of all subjects on the left hand side. Press the small `Rec' button. This will search through all subjects and pick out their SPM.mat files. Check that 60 are selected at the bottom of the file selector window and press Done.
 
-\item Regions of interest - Now we'll select the timeseries (VOIs) for each subject. Click Regions of interest then click New: Region (VOI files). Do this four times, so you get four entries in the batch which say `Region (VOI files)'. Double click the first one and use the two small dots (..) on the left hand side to navigate to the GLM folder. We're going to select lvF timeseries for every subject. Delete the text in the Filter box on the right hand side (\textasciicircum VOI\_.*\textbackslash.mat\$) and type: VOI\_lvF. Then click Rec, which will search through all the subjects' folders selecting the 60 lvF files. Press Done.
+\item Regions of interest - Now we'll select the timeseries (VOIs) for each subject. Click Regions of interest then click New: Region (VOI files). Do this four times, so you get four entries in the batch which say `Region (VOI files)'. Double click the first one and navigate to the GLM folder which contains all the subjects. Do this by clicking the two small dots (..) on the left hand side of the file selector. We're going to select lvF timeseries for every subject. Delete the text in the Filter box on the right hand side (\textasciicircum VOI\_.*\textbackslash.mat\$) and type: lvF. Then click Rec, which will search through all the subjects' folders selecting the 60 lvF files. Press Done.
 
-\item Next we'll select the VOI files for the second region (ldF). Double click the second `Region (VOI files)' entry, navigate to the GLM folder by clicking .. on the left hand side, and type VOI\_ldF into the filter box. Then click Rec. Repeat this process for regions rvF then rdF.
+\item Next we'll select the VOI files for the second region (ldF). Double click the second `Region (VOI files)' entry, navigate to the GLM folder by clicking .. on the left hand side, delete the contents of the filter box and type: VOI\_ldF. Then click Rec. This should find the ldF timeseries from all 60 subjects - press done. Then repeat this process for regions rvF then rdF. You should now have timeseries for all 4 regions of interest, and the batch should look like Figure \ref{Fig_batch_specify_group}.
 
 \end{itemize}
-\item Click File $\rightarrow$ Save batch and save it somewhere safe. Then press the green play button to run it.
+\item Click File $\rightarrow$ Save batch and save it somewhere safe, with a name like replicate\_dcm\_batch.mat. Then press the green play button to run it.
 \end{itemize}
 
 \begin{figure}[ht]
@@ -194,80 +195,79 @@ Having specified two DCMs for a single subject, we can now use these as template
 \end{center}
 \end{figure}
 
-If all has gone to plan, you'll see two DCMs in each subject's GLM folder named \\ DCM\_two\_models\_m0001.mat (the full model) and DCM\_two\_models\_m0002.mat (the reduced model with no effect of pictures). Their filenames will also be collated into a single Group DCM (GCM) cell array saved in a file named `GCM\_two\_models.mat' in the analyses folder.
+If all has gone to plan, you'll see two DCMs in each subject's GLM folder named \\ DCM\_two\_models\_m0001.mat (the full model) and DCM\_two\_models\_m0002.mat (the reduced model with no effect of pictures on region ldF). Their filenames will also be collated into a single cell array and saved in a file named `GCM\_two\_models.mat' in the `analyses' folder.
 
 \subsubsection{Estimating} \label{GUI_estimation}
 
 Having specified two DCMs for every subject, let's now fit them to the data. In the Batch editor, click File $\rightarrow$ New Batch. Then click SPM $\rightarrow$ DCM $\rightarrow$ DCM estimation. Fill out the batch as follows:
 
 \begin{itemize}
-    \item Select GCM\_*.mat - navigate to the analyses folder and select the file named GCM\_two\_models.mat we created earlier. This contains a subjects x models cell array of DCM filenames. Then press Done.
-    \item Output - click Output, then click `Overwrite existing GCM\_*.mat file'.
+    \item Select GCM\_*.mat - double click, then navigate to the analyses folder by using the two dots (..) on the left hand side. Select the file named GCM\_two\_models.mat we created earlier. Then press Done. The file we selected contains a cell array of DCM filenames. 
+    \item Output - single click Output, then click `Only save individual DCM files'.
 \end{itemize}
 
-The other items can be left on their defaults. Save this batch by clicking File, Save Batch, then when ready click the green play button. This will fit each full model to the subject's data, and then analytically derive the evidence and parameters of the nested models (DCM\_words) using Bayesian Model Reduction (BMR).
+The other items can be left on their defaults. Save this batch by clicking File, Save Batch. If you want, you can estimate the models by pressing the green play button, which will take about 10 minutes on a high-spec PC with parallel computing enabled (see Tip below). This will fit each full model to the subject's data, and then analytically derive the evidence and parameters of each nested model (DCM\_no\_ldF\_modulation.mat) using Bayesian Model Reduction (BMR). The results will overwrite the DCM files in each subject's folder.
 
-\textbf{Tip}: you can speed up DCM estimation by using parallel computing. As of SPM revision 7365, you can switch this on by editing spm\_dcm\_fit.m and setting the default option for model estimation on line 24 to true.
+\textbf{Tip}: depending on your computer, you might be able to speed up DCM estimation by using parallel computing. You can switch this on by editing spm\_dcm\_fit.m and changing the variable named `use\_parfor' on line 24 from false to true.
 
 \subsubsection{Diagnostics} \label{GUI_diagnostics}
-Having completed the estimation of the first-level DCMs, it is a good time to perform some diagnostics on the models. First, in Matlab, change to the analyses directory and load the GCM file containing the filenames of all subjects' DCMs (GCM\_two\_models.mat), by double clicking on it. Then type or paste the following code:
+Having completed the estimation of the first-level DCMs, it is a good time to perform some diagnostics on the models. First, in Matlab, change to the analyses directory and load the GCM file containing the filenames of all subjects' DCMs (GCM\_two\_models\_pre\_estimated.mat), by double clicking on it. Then type or paste the following code:
 
 \begin{lstlisting}[style=Matlab-editor, caption=DCM for fMRI diagnostics]
 spm_dcm_fmri_check(GCM);
 \end{lstlisting}
 
-The output of this command is shown in Figure \ref{Fig_spm_dcm_fmri_check_part1}. This is a graphical representation of the GCM file, where the long coloured bar indicates the explained variance of each DCM, and the two columns are the two models per subject. Only the first column (the full model) will have the explained variance calculated. Here we clicked on the model for Subject 37, who had explained variance 18.86\%. Clicking the different subjects shows that some models explained more variance than others. In a real experimental situation, there would be a few options for how to deal with subjects with poor explained variance (less than 10\%) - see Section 5 at the end of this guide for more detail.
+The output of this command is shown in Figure \ref{Fig_spm_dcm_fmri_check_part1}. This is a graphical representation of the GCM file, where the long coloured bar indicates the explained variance of each DCM, and the two columns are the two models per subject. Only the first column (the full model) will have the explained variance calculated. Here we clicked on the model for Subject 37, who had explained variance 18.86\%. Clicking the different subjects shows that some subjects' models explained more variance than others. In a real experimental situation, there would be a few options for how to deal with subjects with poor explained variance (less than 10\%) - see Section 5 at the end of this guide for more detail.
 
-\begin{figure}[ht]
+\begin{figure}[h]
 \begin{center}
 \includegraphics{"Fig_spm_dcm_fmri_check_part1"}
 \caption{Output of spm\_dcm\_fmri\_check(GCM) \label{Fig_spm_dcm_fmri_check_part1}}
 \end{center}
 \end{figure}
 
-
 \begin{figure}[ht]
 \begin{center}
-\includegraphics{"Fig_spm_dcm_fmri_check_part2"}
+\includegraphics[width=10cm]{"Fig_spm_dcm_fmri_check_part2"}
 \caption{Output of spm\_dcm\_fmri\_check(GCM) after selecting a subject and clicking the Diagnostics button.\label{Fig_spm_dcm_fmri_check_part2}}
 \end{center}
 \end{figure}
 
-Additional diagnostics can be found by clicking the Diagnostics button, which shows the window in Figure \ref{Fig_spm_dcm_fmri_check_part2}. The top plot shows the predicted timeseries (solid lines) and the data (dotted lines). Here we check that the predicted timeseries are not a flat line - i.e. some dynamics were captured by the model. The bottom-left plot shows the estimated parameters from matrix \(A\) (the average or baseline connectivity over experimental conditions). This lets us check that the data have informed the model, such that the neural parameters have confidently deviated away from zero (the prior). The bottom-right plot shows the correlations between the parameters as well as the estimated number of parameters (degrees of freedom) in the model, after taking these correlations into account. This is a little harder to apply as a diagnostic, but may be useful for the development of new models.
+After clicking on a subject's full model (left hand column of the figure), click the Diagnostics button, which shows the window in Figure \ref{Fig_spm_dcm_fmri_check_part2}. The top plot shows the predicted timeseries (solid lines) and the data (dotted lines). Here we check that the predicted timeseries are not a flat line - i.e. some dynamics were captured by the model. The bottom-left plot shows the estimated parameters from matrix \(A\) (the average or baseline connectivity over experimental conditions). This lets us check that the data have informed the model, such that the neural parameters have confidently deviated away from zero (the prior). The bottom-right plot shows the correlations between the parameters as well as the estimated number of parameters (degrees of freedom) in the model, after taking these correlations into account. This is a little harder to apply as a diagnostic, but may be useful for the development of new models.
 
 This completes the first level analysis. The next step is to summarise the individual subjects' DCM parameters at the group level and test hypotheses.
 
 \subsection{Second level analysis: PEB}
 \subsubsection{PEB model specification} \label{GUI_PEBspec}
-The first level analysis provided estimates of the B-matrix parameters (modulatory inputs) and the C-matrix parameters (driving inputs) for every subject. We will now form a Bayesian General Linear Model (GLM) of the individual subjects' DCM parameters and use this to test hypotheses. 
+The first level analysis provided estimates of the parameters for every subject. Of particular interest here are the B-matrix parameters (modulatory inputs). We will now form a Bayesian General Linear Model (GLM) of the individual subjects' DCM parameters and use this to test hypotheses. 
 \begin{itemize}
-    \item Load the between-subjects design matrix into the Matlab workspace. To do this, go to the main Matlab window and change to the directory where you downloaded the example dataset. On the left hand side, find the file named design\_matrix.mat and double click on it to load it into Matlab. You will get a variable in the workspace named X (the design matrix) and another variable called labels (the name of each column in the design matrix: Mean, LI, Handedness, Gender, Age). 
+    \item Load the between-subjects design matrix into the Matlab workspace. To do this, go to the main Matlab window and change to the directory where you downloaded the example dataset (if you're currently in the analyses folder, then it's one folder up). On the left hand side, find the file named design\_matrix.mat and double click on it to load it into Matlab. You will get a variable in the workspace named X (the design matrix) and another variable called labels (the name of each column in the design matrix: Mean, LI, Handedness, Gender, Age). 
     \item Go to the main SPM window and click Batch. Then click SPM $\rightarrow$ DCM $\rightarrow$ Second level $\rightarrow$ Specify / estimate PEB. Fill out the batch as follows (also shown in Figure \ref{Fig_batch_specify_peb}):
     
     \begin{itemize}
-        \item Name - This is a name for the analysis. Call it: BC. This is because we're going to include all parameters from each subject's DCM matrix B (modulatory inputs) and matrix C (driving inputs).
+        \item Name - This is a name for the analysis. Call it: B. This is because we're going to include all parameters from each subject's DCM matrix B (modulatory inputs).
         
-        \item DCMs - Navigate to the analyses folder and select the file named  GCM\_two\_models.mat. This contains the filenames of all subjects' DCM files.
+        \item DCMs - Double click, then navigate to the analyses folder and select the file named  GCM\_two\_models\_pre\_estimated.mat. This contains the filenames of all subjects' DCM files.
         
         \item Selected DCM index - Recall that we specified 2 DCMs per subject, a full model and a reduced model. We are going to build the PEB model using the parameters from each subject's full model (model 1). So leave this on the default value of 1.
         
-        \item Covariates - This is where we specify the columns of the  between-subjects design matrix. Click Covariates then `Specify design matrix', then double click `Design matrix'. Type: X then click OK. This will read the design matrix we loaded earlier into the batch editor. You should see the numbers from the design matrix, in 5 columns with 60 rows. Then single click on `Covariate names', click `New: Name', double click 'Name', type `Mean' then click OK.  Repeat this to give names for the remaining four covariates: LI, Handedness, Gender, Age.
+        \item Covariates - This is where we specify the columns of the  between-subjects design matrix. Click Covariates then `Specify design matrix', then double click `Design matrix'. Type: X then click OK. This will read the design matrix we loaded earlier. You should see the numbers from the design matrix, in 5 columns with 60 rows. Then single click on `Covariate names', click `New: Name', double click 'Name', type `Mean' then click OK.  Repeat this to give names for the remaining four covariates: LI, Handedness, Gender, Age.
         
         \begin{itemize}
-            \item \textbf{Design matrix tips}: The first covariate should be all ones, to represent the commonalities across subjects. If there are between-subjects differences (covariates) to include, these should appear in subsequent columns, with the most interesting between-subjects difference in the second column of the design matrix. Optionally, you might want to mean-centre columns 2 to C, where C is the number of columns. This will give the first column the interpretation of the mean connectivity across subjects. If they are not mean-centred, the first column will represent the baseline or intercept. The code for mean-centring is: X(:,2:C)=X(:,2:C)-mean(X(:,2:C)). Note that for every regressor in the design matrix, parameters will be added for every DCM connection. So try to keep the number of regressors to a minimum, to keep model estimation tractable.
+            \item \textbf{Design matrix tips}: The first covariate should be all ones, to represent the commonalities across subjects. If there are between-subjects differences (covariates) to include, these should appear in subsequent columns, with the most interesting between-subjects difference in the second column of the design matrix. Optionally, you might want to mean-centre columns 2 to K, where K is the number of columns. This will give the first column the interpretation of the mean connectivity across subjects. If they are not mean-centred, the first column will represent the baseline or intercept. The code for mean-centring is: X(:,2:K)=X(:,2:K)-mean(X(:,2:K)). Note that for every regressor in the design matrix, parameters will be added for every DCM connection. So try to keep the number of regressors to a minimum, to keep model estimation tractable.
         \end{itemize}
         
-        \item Fields - We're only going to take parameters from DCM matrices B and C to the group level. Click Fields, then click `Enter manually'. Double click `Enter manually' and type: \{`B',`C'\} including the curly brackets, then press OK.
+        \item Fields - We're only going to take parameters from DCM matrix B to the group level. Click Fields, then click `Enter manually'. Double click `Enter manually' and type: \{`B'\} including the curly brackets, then press OK.
         
         \item Max iterations - Scroll to the bottom of the batch to find this option, which controls the maximum number of iterations of the model fitting procedure. This example dataset is quite large and we found that the default of 64 iterations was not enough. Set this to 256.
 
     \end{itemize}
-\item Now save the batch by clicking File, Save Batch and run it by pressing the green arrow. The won't show any windows, but will create and estimate the group-level PEB model and store the results in a file called PEB\_BC.mat within the analyses folder.
+\item Now save the batch by clicking File, Save Batch and give it a name like `peb\_spec\_batch.mat'. Then run the batch by pressing the green play button. The won't show any windows, but will create and estimate the group-level PEB model and store the results in a file called PEB\_BC.mat within the analyses folder.
 \end{itemize}
 
 \begin{figure}[ht]
 \begin{center}
-\includegraphics{"Fig_batch_specify_peb"}
+\includegraphics[width=10cm]{"Fig_batch_specify_peb"}
 \caption{Batch to specify and estimate second level model (PEB). \label{Fig_batch_specify_peb}}
 \end{center}
 \end{figure}
@@ -276,87 +276,87 @@ The PEB model created above (PEB\_BC.mat) contains parameters which quantify the
 
 \subsubsection{Model comparison: automatic search} \label{GUI_search}
 
-The simplest form of model comparison to run is an automatic search over reduced models, which will prune parameters from the PEB model that do not contribute to the model evidence. The software with specify hundreds of candidate reduced models, in which combinations of parameters have been switched off. If switching off a combination of parameters reduces the free energy, then they are left switched on and the next combination of parameters is evaluated. This process is performed rapidly using a method called Bayesian Model Reduction (BMR).
+To make use of the PEB model, we need to perform a model comparison. The simplest form of model comparison to run is an automatic search, which will prune parameters from the PEB model that do not contribute to the model evidence. The software with specify and compare hundreds of candidate reduced PEB models, in which different combinations of parameters have been switched off. This process is performed rapidly using a method called Bayesian Model Reduction (BMR). It will then average the parameters (connection strengths) from the best reduced models - this is called Bayesian Model Averaging (BMA).
 
 \begin{itemize}
     \item In the batch editor, click File $\rightarrow$ New Batch then click SPM $\rightarrow$ DCM $\rightarrow$ Second level $\rightarrow$ Search nested PEB models. Fill it out as follows:
     \begin{itemize}
-        \item Select PEB file - In the file selector, navigate to the analyses directory and choose the PEB\_BC.mat file we created earlier. This is the full PEB model which will be pruned by the search.
+        \item Select PEB file - In the file selector, navigate to the analyses directory and choose the PEB\_B.mat file we created earlier. This is the full PEB model which will be pruned by the search.
         \item DCMs - Select the GCM\_two\_models.mat file we created earlier, from the analyses folder. (This is only used to make the graphical output more readable.)
         \item Null prior variance - This determines the null hypothesis for each connectivity parameter - i.e. what prior variance constitutes a connection being `switched off'. For consistency with the paper, set this to 0 (zero).
     \end{itemize}
-    \item Save the batch and press the green play button. This will produce three windows as well as a file called BMA\_PEB\_BC.mat in the analyses folder containing the results. Let's go through each of the windows.
+    \item Save the batch (e.g. with a name like `search\_batch.mat') and press the green play button. This will produce three windows as well as a file called BMA\_PEB\_B.mat in the analyses folder containing the results. Let's go through each of the windows.
 \end{itemize}
 
-This creates three windows. The window titled `BMR - all' (Figure \ref{Fig_peb_search_part1}) details the 256 candidate PEB models from the final iteration of the automatic search. The top left plot shows the log model evidence for each PEB model and the top right shows these values converted to posterior probabilities. The second row shows the parameters of the PEB model before the search (left) and after the search (right). Clearly, many parameters have been pruned away. We will return to the identity of these parameters shortly. The bottom left plot shows the parameters that were switched on (white) and switched off (black) in each model from the final iteration of the search. For example, C(1,1) - the driving input of Task on region lvF - was switched off in the first 128 models and switched on in the second 128 models. Finally, the bottom right plot shows the posterior probability for each PEB parameter. This is computed by comparing the evidence for all models (out of the final 256) which had the corresponding parameter switched on, versus all models which had that parameter switched off.
+The window titled `BMR - all' (Figure \ref{Fig_peb_search_part1}) details the 256 candidate PEB models from the final iteration of the automatic search. The top left plot shows the log model evidence for each PEB model and the top right shows these values converted to posterior probabilities. The second row shows the parameters of the PEB model before the search (left) and after the search (right). Clearly, many parameters have been pruned away because they did not contribute to the model evidence (free energy). We will return to the identity of these parameters shortly. The bottom left plot shows the parameters that were switched on (white) and switched off (black) in each model from the final iteration of the search. For example, B(2,2,2) - the modulatory effect of Pictures on region ldF - was switched off in the first 128 models and switched on in the second 128 models. Finally, the bottom right plot shows the posterior probability for each PEB parameter. This is computed by comparing the evidence for all models (out of the final 256) which had the corresponding parameter switched on, versus all models which had that parameter switched off.
 
 \begin{figure}[ht]
 \begin{center}
-\includegraphics{"Fig_peb_search_part1"}
+\includegraphics[width=10cm]{"Fig_peb_search_part1"}
 \caption{Model space display after performing an automatic search over reduced PEB models. (Generated by spm\_dcm\_bmr\_all.m which is called by spm\_dcm\_peb\_bmc.m) \label{Fig_peb_search_part1}}
 \end{center}
 \end{figure}
 
-With a large model comparison such as this, it is unusual to find one model that is the overall winner. Instead of considering the individual models, it is generally more informative to consider the BMA - the weighted average of parameters over models. The window titled BMC (Bayesian Model Comparison, Figure \ref{Fig_peb_search_part2}) shows this average, with plots organised into three columns. The first column relates to the first 12 PEB parameters, which are the commonalities across subjects (group average). The second column shows the parameters relating to the first group difference, LI. The third column shows parameters relating to the next group difference, Handedness. The first row shows the parameters from the PEB model, and the second row shows the parameters after the model search and the BMA. It is clear that only one effect of LI has survived (parameter 8) and no effect of handedness has survived. The bottom row shows the posterior probability for each parameter (as described above). The legend at the bottom right identifies the 12 parameters used in all the plots, and it shows that the only surviving LI parameter is B(4,4,3) - the effect of condition 3 (Words) on the self-connection of region 4 (rdF).
+With a large model comparison such as this, it is unusual to find one model that is the overall winner. Instead of considering the individual models, it is generally more informative to consider the BMA - the weighted average of the parameters over models. The window titled BMC (Bayesian Model Comparison, Figure \ref{Fig_peb_search_part2}) shows this average, with plots organised into three columns. The first column relates to the first eight PEB parameters, which are the commonalities across subjects (group average). Each bar corresponds to one DCM connection. The second column shows the PEB parameters relating to the group difference, LI. The third column shows parameters relating to the next group difference, Handedness. The first row shows the parameters from the PEB model, and the second row shows the parameters after the model search and the BMA. It is clear from the middle plot that only one effect of LI has survived (parameter eight) and the plot to its right shows that no effect of handedness has survived. The bottom row shows the posterior probability for each parameter (as described above). The legend at the bottom right identifies the eight parameters used in all the plots, and it shows that the only surviving LI parameter is B(4,4,3). The first number is the target region, the second number is the source region, and the third number is the experimental condition. So that's the modulation of the self-connection on region 4 (rdF) by experimental condition 3 (Words).
 
 \begin{figure}[ht]
 \begin{center}
-\includegraphics{"Fig_peb_search_part2"}
+\includegraphics[width=10cm]{"Fig_peb_search_part2"}
 \caption{Bayesian Model Average (BMA) after calling spm\_dcm\_peb\_bmc in automatic search mode.\label{Fig_peb_search_part2}}
 \end{center}
 \end{figure}
 
-An interactive tool provides the easiest way to explore the results of this analysis in more detail. This is the third window, titled `PEB - Review Parameters', shown in Figure \ref{Fig_peb_search_review}. Should you need to open this tool yourself at a later stage, then the command is:
+An interactive tool provides an easier way to explore the results of this analysis. This is the third window, titled `PEB - Review Parameters', shown in Figure \ref{Fig_peb_search_review}. Should you need to open this tool yourself at a later stage, then the command is:
 
 \begin{lstlisting}[style=Matlab-editor,caption=PEB review tool]
 spm_dcm_peb_review(BMA,GCM);
 \end{lstlisting}
 
-The different parts of this screen are as follows:
+We'll first walk through each part of this tool, labelled in Figure \ref{Fig_peb_search_review}, and then we'll use it to address our experimental question:
 
 \begin{enumerate}[label=\Alph*)]
 \item The boxes give the number of regressors (covariates) in the between-subjects design matrix, the number of DCM parameters taken from the first to the second level and the number of subjects. The between-subjects design matrix is shown below, with one subject per row and one covariate (regressor) per column.
 \item The estimated between-subject covariance matrix. The diagonal is the estimated between-subjects variance for each parameter, where the more white they are, the greater the between-subjects variability. Clicking on each item identifies the corresponding parameter.
 \item The parameters are grouped by covariate. Use this selector to choose which covariate you'd like to review.
-\item Optionally, the parameters can be thresholded to just focus on the most probable effects. The first drop-down menu switches between thresholding based on the posterior variance (the pink error bars) or based on the free energy (model comparisons with/without each parameter). Where possible, we recommend selecting free energy. The second menu selects the threshold.
+\item Optionally, the parameters can be thresholded to just focus on the most probable effects. The first drop-down menu switches between thresholding based on the free energy (model comparisons with/without each parameter) and thresholding based on the posterior variance (the pink error bars). Where possible, we recommend selecting free energy. The menu on the right is used to select the threshold.
 \item The bars are the parameters relating to the selected covariate. Pink error bars are 90\% credible intervals. Clicking on a bar shows the name of the parameter, its expected value, and its probability calculated using the option selected above.
 \item Use this selector to display the parameters as a connectivity matrix.
 \end{enumerate}
 
-We'll use this screen to see where Laterality Index (LI) had an effect:
+We'll now use this screen to see where Laterality Index (LI) had an effect:
 
 \begin{itemize}
     \item Click `Please select...' and choose `Second-level effect - LI' (using part B of the interface). This will display the LI parameters.
-    \item In part D of the interface, next to `Threshold (optional):' select `Free energy (with vs without)'. In the right-hand box, select to `Strong evidence (Pp $>$ 95\%)' in part D of the interface.
+    \item In part D of the interface, next to `Threshold (optional):' ensure `Free energy (with vs without)' is selected. In the right-hand box, select to `Strong evidence (Pp $>$ 95\%)' in part D of the interface.
     \item Click on the single surviving bar, which identifies this parameter as the `B-matrix from rDF to rDF (Input Words)'. This means it is the modulatory input on rDF's self-connection due to word stimuli.
 \end{itemize}
 
-This result shows that the effect of word stimuli on rDF inhibitory self-connection increased with LI. For every additional 1 point of LI, the self-connection increases by 1.80. (NB if the bar had been negative, it would have meant a decrease in the inhibitory self-connection with LI). We may therefore conclude that recurrent activity in region rdF is sufficient to explain individual differences in LI.
+This result shows that the effect of word stimuli on rDF inhibitory self-connection increased with LI. The strength of the self-connection increased by 1.80 times the LI score. (NB if the bar had been negative, it would have meant a decrease in the inhibitory self-connection with LI). We may therefore conclude that recurrent activity in region rdF is sufficient to explain individual differences in LI across subjects.
 
 This concludes an analysis based on automatically searching over reduced PEB models. Next, we will try comparing specific PEB models based on pre-defined hypotheses.
 
 \begin{figure}[ht]
 \begin{center}
-\includegraphics{"Fig_peb_search_review"}
+\includegraphics[width=10cm]{"Fig_peb_search_review"}
 \caption{The PEB review tool (spm\_dcm\_peb\_review) applied to the results of the automatic search.\label{Fig_peb_search_review}}
 \end{center}
 \end{figure}
 
 \subsubsection{Model comparison: specific models} \label{GUI_specificDCMs}
 
-We're now going to compare the evidence for two specific hypotheses:
+We are going to compare the evidence for two specific hypotheses:
 
 \begin{itemize}
     \item H1: there was modulation of region ldF by Pictures and Words
     \item H2: there was NO modulation of region ldF by Pictures and Words
 \end{itemize}
 
-We will test these two hypotheses as explanations for the commonalities across subjects (i.e. the group mean), and the differences across subjects due to LI. This will require comparing the evidence for four alternative PEB models, with parameters switched on or off according to each combination of hypotheses, listed in the table below. To perform this analysis, follow these steps:
+We will test these two hypotheses as explanations for the commonalities across subjects (i.e. the group mean), and the differences across subjects due to LI. This will require comparing the evidence for four alternative PEB models, with parameters switched on or off according to each combination of hypotheses, listed in the table below: 
 
-\begin{table}[]
+\begin{table}[h]
 \begin{tabular}{|l|l|l|p{6cm}|}
-\hline
- & \textbf{Hypothesis (Commonalities)} & \textbf{Hypothesis (LI)} & \textbf{Description}                             \\ \hline
+\hline \textbf{Model}
+ & \textbf{Commonalities} & \textbf{Differences (LI)} & \textbf{Description}                             \\ \hline
 1              & H1                     & H1          & Common effects (group mean $\ne$ 0) and LI differences                                   \\ \hline
 2              & H1                     & H2          & Common effects (group mean $\ne$ 0) without LI differences \\ \hline
 3              & H2                     & H1          & No common effects (group mean=0) but LI differences        \\ \hline
@@ -364,56 +364,58 @@ We will test these two hypotheses as explanations for the commonalities across s
 \end{tabular}
 \end{table}
 
+To perform this analysis, follow these steps:
+
 \begin{itemize}
     \item Open the batch editor, click File $\rightarrow$ New Batch. Then select SPM $\rightarrow$ DCM $\rightarrow$ Second level $\rightarrow$ Compare / Average PEB models. Fill it out as follows:
     \begin{itemize}
-        \item Select PEB file - Double click and choose the file PEB\_BC.mat we created earlier.
+        \item Select PEB file - Double click and choose the file PEB\_B.mat we created earlier.
         \item DCMs - Double click and choose the file GCM\_two\_models.mat we created earlier.
     \end{itemize}
     \item Save the batch, then click the green play button.
 \end{itemize}
 
-The software will read in the GCM file and look at which connections are switched on or off in each DCM of an example subject. It will use this to determine which parameters should be switched on and off for each reduced PEB model. Two windows are generated. The window titled BMC shows the results of the model comparison, shown in Figure \ref{Fig_peb_2model_bmc}. The panels in this window are as follows:
+The software will read in the GCM file and look at which connections are switched on or off in each DCM of an example subject. It will use this to determine which parameters should be switched on and off for each candidate PEB model. Two windows are generated. The window titled BMC shows the results of the model comparison, shown in Figure \ref{Fig_peb_2model_bmc}. The panels in this window are as follows:
 \begin{itemize}
     \item Top left - the model space. This shows which connections were switched on (white) and switched off (black) in each of the two models. The first column is the full model (H1), and the second column is the reduced model (H2) with the effect of Pictures (parameter B(2,2,2)) and Words (parameter B(2,2,3)) on region ldF switched off.
     \item Top right - the posterior probability for each of the four PEB models described above. The best PEB model had the commonalities across subjects set according to H1 (common effects on ldF) and the LI differences set according to H2 (no LI effects on ldF).
     \item Middle left - The same result as the top right of the figure, but summed over columns and re-normalized. This is the posterior probability of each  hypothesis as an explanation for the commonalities across subjects.
     \item Middle right - The same result as the top right, but summed over rows and re-normalized. This is the posterior probability of each  hypothesis as an explanation for the LI differences across subjects.
-    \item Bottom left - Probability for each of the parameters that varied across models. Computed by comparing all models with each parameter vs without.
-    \item Bottom right - Probability for each of the LI parameters that varied across models. Computed by comparing all models with each parameter vs without.
+    \item Bottom left - Probability for each of the parameters which varied across models. Computed by comparing the evidence for all models which had each parameter switched on vs all models which had the same parameter switched off.
+    \item Bottom right - Probability for each of the LI parameters that varied across models. Computed by comparing the evidence for all models which had each parameter switched on vs all models which had the same parameter switched off.
 \end{itemize}
 
-We can conclude from this result that there was an effect of Picture and Word stimuli on region ldF across subjects (middle left of the figure), however this was not effected by LI. Therefore, hypotheses H1 was the best explanation for the commonalities across subjects and H2 was the best explanation for the LI differences.
+We can conclude from this result with 98\% probability that there was an effect of Picture and Word stimuli on region ldF across subjects (middle left of the figure), however there was no effect of LI on this connection (with 93\% probability). Therefore, hypothesis H1 was the best explanation for the commonalities across subjects and H2 was the best explanation for the LI differences.
 
-As for the automatic search, the window titled `PEB - Review Parameters' can be used to review the connectivity parameters averaged across candidate PEB models (the Bayesian Model Average). Select the LI effect and then set thresholding by Free energy. Click on each bar to show the posterior probability of that parameter being present vs absent. \textbf{However, note these probabilities are only meaningful for parameters (connections) which varied across models - in this case, the effects of Pictures and Words on region ldF. Any parameters which did not vary across models will have probability set to not a number (NaN).} 
+The window titled `PEB - Review Parameters' can be used to review the connectivity parameters averaged across candidate PEB models (the Bayesian Model Average). Select `Second-level effect - Mean' and for clarity, threshold to only show parameters with strong evidence (95\% probability) based on the free energy. \textbf{Only parameters which varied across models will be displayed. Any parameters which did not vary across models will have probability set to not a number (NaN) and so will be hidden by the thresholding step.} This plot shows the two effects - pictures and words - on region ldF. It is clear that pictures increased the strength of the inhibitory self-connection on region ldF. Changing to the effect of LI  (using the drop-down menu above) shows that no connections in this model comparison expressed an effect of LI.
 
 \begin{figure}[ht]
 \begin{center}
-\includegraphics{"Fig_peb_2model_bmc"}
+\includegraphics[width=10cm]{"Fig_peb_2model_bmc"}
 \caption{Comparison of two PEB models: a full model and a reduced model with modulations by word stimuli switched off.\label{Fig_peb_2model_bmc}}
 \end{center}
 \end{figure}
 
 \subsubsection{Prediction: cross-validation} \label{GUI_LOO}
 
-The model search we conducted above identified that the modulation of region rdF's self-connection by word stimuli depended on their LI score. We will now ask: was the effect size large enough to predict a left-out subject's LI score from their connectivity? In other words, does this parameter have predictive validity?
+The model search we conducted in Section \ref{GUI_search} identified that the modulation of region rdF's self-connection by word stimuli depended on the subject's LI score. We will now ask: was the effect size large enough to predict a left-out subject's LI score from their connectivity? In other words, does this parameter have predictive validity? To assess this, we'll use Leave One Out (LOO) cross-validation.
 
 \begin{itemize}
-    \item Ensure the design matrix is still loaded into the Matlab workspace. You can load this again by double clicking on the file named design\_matrix.mat on the left hand side. The design matrix is a variable called X and the column names are in a cell array called labels.
+    \item Ensure the design matrix is still loaded into the Matlab workspace. You can load this again by double clicking on the file named design\_matrix.mat on the left hand side. The design matrix is a variable called X and the names of the columns are in a cell array called labels.
     
-    \item Open the batch editor by clicking Batch from the main SPM window. From the menu at the top, select SPM $\rightarrow$ DCM $\rightarrow$ Second level $\rightarrow$ Predict (cross-validation). The batch now asks all the same questions as when you specified the PEB model above. Fill it out as follows:
+    \item Open the batch editor by clicking Batch from the main SPM window (or click File, New Batch if its already open). From the menu at the top, select SPM $\rightarrow$ DCM $\rightarrow$ Second level $\rightarrow$ Predict (cross-validation). The batch now asks all the same questions as when you specified the PEB model above. Fill it out as follows:
     \begin{itemize}
-        \item Name - type rdF and click OK
+        \item Name - type rdF and click OK.
         
-        \item DCMs - select the file named GCM\_two\_models.mat from the analyses folder we created earlier
+        \item DCMs - select the file named GCM\_two\_models\_pre\_estimated.mat from the analyses folder we created earlier.
         
-        \item Design matrix - double click and type: X  . Then press enter.
+        \item Design matrix - double click and type: X. Then press enter.
         
         \item Covariates - Click on `Covariate names', click `New: Name', double click `Name', then type `Mean' then click OK.  Repeat this to give names for the remaining four covariates: LI, Handedness, Gender, Age.
         
         \item Fields - We will only include the effect of words on the self-connection of region rdF. Click Fields, then click `Enter manually'. Double click `Enter manually' in the main box and type: \{{'B(4,4,3)'}\} including the curly brackets, then press OK. (The three numbers are: target region, source region and experimental condition. The target and source regions are region number 4 (rdF), and Words is condition number 3.)
         
-        \item Max iterations - Set this to 256.
+        \item Max iterations - Scroll to the bottom and set this to 256.
 
     \end{itemize}
     
@@ -421,13 +423,13 @@ The model search we conducted above identified that the modulation of region rdF
     
 \end{itemize}
 
-This will take a little time to run, as it will loop over all 60 subjects, creating a PEB model on the remaining 59 and trying to predict the LI of the left-out subject. The resulting window is shown in Figure \ref{Fig_peb_loo_gui}. The top left plot shows the estimated (mean-centred) LI score as red lines with 90\% confidence interval as the shaded area. The actual scores are shown as faint dotted lines. The top right plot gives the out-of-samples Pearson's correlation between the predicted (expected value) LI score and the actual LI score. This demonstrates a significant positive correlation. The appearance of the bottom plot depends on whether the effect to be predicted is continuous or discrete. Because LI is continuous, the plot shows the predicted LI scores as circles, and the probability density over the prediction as very faint shaded areas. In this example, this is rather hard to see because the shaded areas are small enough to be hidden by the circles. 
+This will take a little time to run, as it will loop over all 60 subjects, creating a PEB model on the remaining 59 and trying to predict the LI of the left-out subject. The resulting window is shown in Figure \ref{Fig_peb_loo_gui}. The top left plot shows the estimated (mean-centred) LI score as red lines with 90\% confidence interval as the shaded area. The actual scores are shown as faint dotted lines. The top right plot gives the out-of-samples Pearson's correlation between the predicted (expected value) LI score and the actual LI score. This demonstrates a significant positive correlation. The design of the bottom plot depends on whether the effect to be predicted is continuous or discrete. Because LI is continuous, the plot shows the predicted LI scores as circles, and the probability density over the prediction as very faint shaded areas. In this example, this is rather hard to see because the shaded areas are small enough to be hidden by the circles. 
 
-We may conclude from this analysis that the effect of words on rdF is sufficiently large to predict subjects' LI scores.
+We may conclude from this analysis that the effect of words on rdF was sufficiently large to significantly predict subjects' LI scores.
 
 \begin{figure}[ht]
 \begin{center}
-\includegraphics{"Fig_peb_loo_gui"}
+\includegraphics[width=10cm]{"Fig_peb_loo_gui"}
 \caption{Result of Leave-One-Out (LOO) cross-validation on the self-connection of region rdF to predict the subjects' LI scores.\label{Fig_peb_loo_gui}}
 \end{center}
 \end{figure}
@@ -437,20 +439,22 @@ This concludes the tutorial on DCM and PEB using the GUI. To recap the steps we 
 \begin{enumerate}
     \item We specified two DCMs for an example subject: a full model and a reduced model.
     \item We replicated these DCMs over subjects.
-    \item We estimated the DCMs, to get estimates of the connection strengths.
-    \item We took all the estimated modulatory (B) and driving input (C) parameters to the group level by specifying a PEB model.
-    \item We compared the full PEB model to thousands of reduced PEB models using an automatic search.
+    \item We estimated the DCMs, which provided estimates of the connectivity parameters.
+    \item We took the estimated modulatory (B) parameters to the group level by specifying a PEB model.
+    \item We compared the full PEB model to hundreds of reduced PEB models using an automatic search, which revealed a specific effect of LI on region rdF.
     \item We also tested a specific hypothesis about region ldF by comparing the full PEB model against a specific reduced model.
     \item Finally, we evaluated the predictive validity of a parameter (the influence of words on region rdF) using Leave-One-Out cross-validation.
 \end{enumerate}
 
 The remainder of this document repeats and extends this analysis using scripting rather than the GUI.
 
-
 \section{Analysis using scripting}
+
+DCM analyses can also be scripted in Matlab, rather than just using the SPM GUI. This is useful for generating multiple model structures per subject without having to click lots of buttons in the GUI, enabling the creation of more interesting model spaces. The pipeline we will implement here using scripts will be similar to that performed above using the GUI, but we will additionally demonstrate having a much larger model space (112 pre-defined models) and the use of `family analysis' to compare groups of models. The scripts we will work through can be found in the `code' folder in the accompanying dataset.
+
 \subsection{First level analysis: DCM for fMRI}
 
-We'll start by defining some settings. It's a good idea to do this at the top of the script:
+We'll start with the within subject (first level) analysis, which can be found in `code\\Run\_first\_level.m'. The script begins with some settings:
 
 \begin{lstlisting}[style=Matlab-editor,caption=Settings]
 % MRI scanner settings
@@ -458,7 +462,7 @@ TR = 3.6;   % Repetition time (secs)
 TE = 0.05;  % Echo time (secs)
 
 % Experiment settings
-nsubjects = 60;
+nsubjects   = 60;
 nregions    = 4; 
 nconditions = 3;
 
@@ -473,7 +477,7 @@ By defining constants like PICTURES=2, the code which follows will be more reada
 
 \subsubsection{Selecting connections}
 
-Next we'll configure the connectivity by selecting which connections we want switched on (informed by the data) and which we want switched off (fixed at zero). Matrix \(A\) in the DCM equation is the average connectivity across experimental conditions. We'll form a matrix  \(a\) which selects which connections A-matrix connections should be switched on (1) and off (0):
+Next we'll configure the connectivity by selecting which connections we want switched on (informed by the data) and which we want switched off (fixed at zero). Matrix \(A\) in the DCM neural model is the average connectivity across experimental conditions. We'll form a matrix  \(a\) which we will use to select which A-matrix connections should be switched on (1) and off (0):
 
 \[
  a=\begin{bmatrix}
@@ -509,7 +513,7 @@ b(:,:,3)=\begin{bmatrix}
  \end{bmatrix}  
 \]
 
-Again, the columns are the outgoing connections and the rows are the incoming connections. The third dimension is the experimental condition, ordered: Task=1, Pictures=2 and Words=3. So in this example, the first b-matrix says that Task does not modulate any connections, whereas Pictures and Words modulate the self-connection of all regions (in the second and third matrices respectively). 
+Again, the columns are the outgoing connections and the rows are the incoming connections. The third dimension - shown here as three separate matrices - indexes the experimental condition, ordered: Task=1, Pictures=2 and Words=3. So in this example, the first b-matrix says that Task does not modulate any connections, whereas Pictures and Words modulate the self-connection of all regions (in the second and third matrices respectively). 
 
 Finally, matrix \(c\) determines which regions are driven by each experimental condition:
 
@@ -522,7 +526,7 @@ c=\begin{bmatrix}
  \end{bmatrix} 
 \]
 
-The columns are the conditions and the rows are the brain regions. This says that all four regions can be driven by Task, whereas Pictures and Words are only used used as modulatory inputs, whereas Pictures and Words do not drive any regions.
+The columns are the conditions and the rows are the brain regions. This says that all four regions can be driven by Task, whereas Pictures and Words are only used used as modulatory inputs.
 
 \subsubsection{DCM specification}
 Let's write the connectivity matrices above in Matlab code:
@@ -548,7 +552,7 @@ c(:,TASK) = 1;
 d = zeros(nregions,nregions,0);
 \end{lstlisting}
 
-We can now specify the DCMs. For each subject we'll need their SPM.mat file (which provides the experimental timing) and their Volume of Interest (VOI) files, which provide the timeseries. We'll give these to the spm\_dcm\_specify function to create each subject's DCM:
+We can now specify the DCMs. For each subject we'll need their SPM.mat file (which provides the experimental timing) and their Volume of Interest (VOI) files, which provide the timeseries. We'll give these to the spm\_dcm\_specify.m function to create each subject's DCM:
 
 \begin{lstlisting}[style=Matlab-editor,caption=DCM specification]
 start_dir = pwd;
@@ -602,7 +606,7 @@ end
 
 \subsubsection{Estimating a GCM file}
 
-We have now created a DCM for each subject named DCM\_full.mat. The next step is to collate these into single group DCM file (GCM), which is a cell array with one row per subject and one column per model, which we'll then fit to the data:
+We have now created a DCM for each subject named DCM\_full.mat. Next we'll collate these into single group DCM file (GCM), which is a cell array with one row per subject and one column per model, which we'll then fit to the data:
 
 \begin{lstlisting}[style=Matlab-editor, caption=Estimating models]
 % Find all DCM files
@@ -632,18 +636,6 @@ GCM = spm_dcm_fit(GCM,use_parfor);
 
 \end{lstlisting}
 
-\subsubsection{Specifying reduced DCMs}
-Following the paper, we will test 4 experimental questions:
-
-\begin{enumerate}
-    \item Did dorsal regions drive ventral regions, or vice versa? [Options: both, dorsal, ventral, neither]
-    \item Was the network modulated by picture stimuli, word stimuli, both or neither?  [Options: both, words, pictures]
-    \item Did the stimuli modulate dorsal or ventral regions? [Options: both, dorsal, ventral]
-    \item Did the stimuli modulate left or right regions, both or neither? [Options: both, left, right]
-\end{enumerate}
-
-To try all combinations of these options, we will need 4x3x3x3=108 models. Additionally, we'll include 4 `null' models, 1 for each option Question 1, which have no modulatory inputs by task. That gives a total of 112 models alternative models to compare, based on our hypotheses. These candidate DCMs will not need to be estimated - we will just use them to tell the software which connections to switch on and off for each candidate group-level PEB model. The script supplied with this tutorial creates 112 minimal DCMs containing only the required fields: a,b,c,d,name and options, and it puts these DCMs in a cell array with a single row (saved in analyses/GCM\_templates.mat).
-
 \subsubsection{Diagnostics}
 Having completed the estimation of the first-level DCMs, it is a good time to perform some diagnostics on the models. To inspect the models, run:
 
@@ -651,12 +643,25 @@ Having completed the estimation of the first-level DCMs, it is a good time to pe
 spm_dcm_fmri_check(GCM);
 \end{lstlisting}
 
-For interpretation of these results, please see section \ref{GUI_diagnostics}. We have now specified DCMs for each subject, collated them into a GCM file, fitted them to each subject's data and performed some basic diagnostics. Next, we use these models to test hypotheses at the group level using PEB.
+For interpretation of these results, please see section \ref{GUI_diagnostics}.
+
+\subsubsection{Specifying reduced DCMs}
+Following the paper, we will test whether the commonalities across subjects, and the differences across subjects due to LI, could be explained by:
+
+\begin{enumerate}
+    \item picture stimuli and / or word stimuli,
+    \item dorsal and / or ventral regions,
+    \item left and / or right regions.
+\end{enumerate}
+
+To try all combinations of these options, we will need 3x3x3=27 PEB  models with different sets of parameters switched on or off. Additionally, we'll include a `null' model, with no modulatory inputs by task. That gives a total of 28 alternative models to compare, based on our hypotheses. These candidate DCMs will not need to be estimated - we will just use them to tell the software which connections to switch on and off for each candidate PEB model. The script supplied with this tutorial creates 28 minimal DCMs containing only the required fields: a,b,c,d,name and options, and it puts these DCMs in a cell array with a single row (saved in analyses/GCM\_templates.mat).
+
+To recap, we have now specified DCMs for each subject, collated them into a GCM file, fitted them to each subject's data and performed some basic diagnostics. We have also prepared templates models defining our model space. Next, we will use these models to test hypotheses at the group level using PEB.
 
 \subsection{Second level analysis: PEB}
 
 \subsubsection{PEB model specification}
-The prerequisites for a PEB analysis are a between-subjects design matrix and the estimated DCMs from each subject (collated in a GCM file). Let's load the ready-made design matrix for this data as well as the GCM we made earlier. We'll create a structure called M to specify the settings for the PEB model:
+There are two prerequisites for a PEB analysis: a between-subject design matrix and the estimated DCMs from each subject (collated in a GCM file). Let's load the ready-made design matrix for this data as well as the GCM we made earlier. We'll create a structure called M to specify the settings for the PEB model:
 
 \begin{lstlisting}[style=Matlab-editor,caption=PEB specification]
 % Load design matrix
@@ -681,49 +686,49 @@ M.Q is the choice of precision components to use. By setting this to 'all', the 
 The PEB model is estimated as follows:
 
 \begin{lstlisting}[style=Matlab-editor,caption=PEB estimation]
-[PEB_BC,RCM_BC] = spm_dcm_peb(GCM,M,{'B','C'});
-save('../analyses/PEB_BC.mat','PEB_BC','RCM_BC');
+[PEB_B,RCM_B] = spm_dcm_peb(GCM,M,{'B'});
+save('../analyses/PEB_B.mat','PEB_B','RCM_B');
 \end{lstlisting}
 
-The last input to spm\_dcm\_peb selects which DCM parameters to take to the group level, i.e. to treat as random effects. Here we have selected all parameters in matrices B (the modulatory inputs) and C (the driving inputs). This will be a total of 12 parameters per subject: the modulatory effect of Pictures, the modulatory effect of Words and the driving effect of Task on each of the 4 regions. The first output from spm\_dcm\_peb is the PEB model (PEB\_BC). The second output (RCM\_BC) is the array of DCMs, where each subject's model has been finessed by the group-level analysis. The individual subjects' parameters and evidence are updated using the group-level connection strengths as empirical priors, potentially saving any subjects with noisy data.
+The last input to spm\_dcm\_peb selects which DCM parameters to take to the group level, i.e. to treat as random effects. Here we have selected all parameters in matrix B (the modulatory inputs). This will be a total of eight parameters per subject: the modulatory effect of Pictures and the modulatory effect of Words on each of the four regions. The first output from spm\_dcm\_peb is the PEB model (PEB\_B). The second output (RCM\_B) is the array of DCMs, where each subject's model has been finessed by the group-level analysis. More specifically, in the array RCM\_B, the individual subjects' parameters and evidence have been updated using the group-level connection strengths as empirical priors, potentially saving any subjects with noisy data.
 
 \subsubsection{Model comparison: automatic search}
 
 Having estimated the PEB model, the next step is to test hypotheses. We'll start with the simplest model comparison procedure, which is an automated search over reduced PEB models. This will evaluate many nested models, in which combinations of parameters are switched off. The parameters of the best candidate models will be averaged, returning a Bayesian Model Average (BMA):
 
 \begin{lstlisting}[style=Matlab-editor,caption=Automatic PEB search]
-BMA_BC = spm_dcm_peb_bmc(PEB_BC);
-save('../analyses/BMA_search_B.mat','BMA_BC');          
+BMA_B = spm_dcm_peb_bmc(PEB_B);
+save('../analyses/BMA_search_B.mat','BMA_B');          
 \end{lstlisting}
 
 This produces two windows, the interpretation of which is described in section \ref{GUI_search}.
 
 \subsubsection{Model comparison: specific models}
-Instead of performing an automatic search over reduced models, we can instead compare specific models according to our hypotheses. For this example we'll compare 112 hypotheses for which combination of connectivity parameters should be switched on and off. Recall that the PEB model includes parameters quantifying the group average strength of each connection (the commonalities across subjects), and parameters quantifying the difference between subjects due to laterality index (LI). The software will evaluate all of the 112 hypotheses for the commonalities parameters, crossed with all of the 112 hypotheses for the LI parameters, necessitating 112x112=12,544 candidate PEB models. Thanks to Bayesian Model Reduction, these can be evaluated in seconds.
+Instead of performing an automatic search over reduced models, we can instead compare specific models according to our hypotheses. For this example we'll compare 28 models which will differ in the combination of connectivity parameters switched on and off. Recall that the PEB model includes parameters quantifying the group average strength of each connection (the commonalities across subjects), and parameters quantifying the difference between subjects due to laterality index (LI). The software will evaluate all of the 28 hypotheses for the commonalities parameters, crossed with all of the 28 hypotheses for the LI parameters, necessitating 28x28=784 candidate PEB models. Thanks to Bayesian Model Reduction, these can be evaluated in seconds.
 
-To tell the software which connections should be enabled for each of the 112 options, we'll give it the template DCMs we defined earlier:
+To tell the software which connections should be enabled for each of the 28 options, we'll give it the template DCMs we defined earlier:
 
 \begin{lstlisting}[style=Matlab-editor,caption=Compare specific PEB models]
 % Load estimated PEB
-load('../analyses/PEB_BC.mat');
+load('../analyses/PEB_B.mat');
 
 % Load template models
 templates = load('../analyses/GCM_templates.mat');
 
 % Run model comparison
-[BMA,BMR] = spm_dcm_peb_bmc(PEB_BC, templates.GCM);
+[BMA,BMR] = spm_dcm_peb_bmc(PEB_B, templates.GCM);
 \end{lstlisting}
 
-Here we have used the same function as for the automatic search (spm\_dcm\_peb\_bmc) but with a second input - a cell array of template DCMs, organised into a cell array of dimension 1 x 112. This produces a figure window titled BMC, shown in Figure \ref{Fig_peb_specific_models_bmc}. The top left shows the model space - the connections switched on (white) and off (black) in each model. It's a good idea to use this part of the figure to check that the models were correctly specified. The top right shows the joint probability for the 112 models as explanations for the commonalities across subjects (i.e. the group average connectivity) and the differences across subjects encoded in the second column of the design matrix (LI). This shows that one combination of models has done particularly well - model 4 of the commonalities and model 69 of the LI differences. The second row shows the same result, but summed over the columns (left) and over the rows (right) and re-normalized, to give the probability of each model as explanations for the commonalities and LI. The bottom row shows the result of model comparisons with and without each parameter. Only one parameter has strong evidence as an explanation for LI - B(4,4,3), the modulatory input on rDF's self-connection due to word stimuli, reproducing our finding above using the automatic search.
+Here we have used the same function as for the automatic search (spm\_dcm\_peb\_bmc) but with a second input - a cell array of template DCMs, organised into a cell array of dimension 1 x 28. This produces a figure window titled BMC, shown in Figure \ref{Fig_peb_specific_models_bmc}. The top left shows the model space - the connections switched on (white) and off (black) in each model. It's a good idea to use this part of the figure to check that the models were correctly specified. The top right shows the joint probability for the 28 models as explanations for the commonalities across subjects (i.e. the group average connectivity) and the differences across subjects encoded in the second column of the design matrix (LI). This shows that one combination of models has done particularly well - model four of the commonalities and model fifteen of the LI differences. The second row shows the same result, but summed over the columns (left) and over the rows (right) and re-normalized, to give the probability of each model as explanations for the commonalities and LI. The bottom row shows the result of model comparisons with and without each parameter. Only one parameter has strong evidence as an explanation for LI - B(4,4,3), the modulatory input on rdF's self-connection due to word stimuli, reproducing our finding above using the automatic search.
 
 \begin{figure}[ht]
 \begin{center}
-\includegraphics{"Fig_peb_specific_models_bmc"}
+\includegraphics[width=10cm]{"Fig_peb_specific_models_bmc"}
 \caption{Output from spm\_dcm\_peb\_bmc when comparing specific pre-defined models.\label{Fig_peb_specific_models_bmc}}
 \end{center}
 \end{figure}
 
-It's also clear from this result that several models had non-trivial levels of evidence, and so the best way to summarise the connection strengths is to look at the Bayesian Model Average. As for the automatic search, we can review the BMA using the review tool:
+It is also clear from this result that several models had non-trivial levels of evidence, and so the best way to summarise the connection strengths is to look at the Bayesian Model Average. As for the automatic search, we can review the BMA using the review tool:
 
 \begin{lstlisting}[style=Matlab-editor,caption=PEB review tool]
 % Review the BMA
@@ -733,7 +738,7 @@ spm_dcm_peb_review(BMA,GCM);
 Which gives similar results as described for the automatic search.
 
 \subsubsection{Model comparison: families}
-As described in the accompanying paper, the 112 models were specified in order to address a series of specific questions. To address these, we can group the models into families and compare the evidence for different families. For example, to ask which experimental condition (modulatory input) was the best explanation for the commonalities and differences across subjects, we'll split the models into four families:
+As described in the accompanying paper, the 28 models were specified in order to address a series of specific questions. To address these, we can group the models into families and compare the evidence for different families. For example, to ask which experimental condition was the best explanation for the commonalities and differences across subjects, we'll split the models into four families:
 
 \begin{enumerate}
     \item Both words and pictures modulating
@@ -742,29 +747,29 @@ As described in the accompanying paper, the 112 models were specified in order t
     \item No modulation
 \end{enumerate}
 
-To define which of the 112 models should be in which family, we created a vector called task\_family where element j is the family for the j'th model. For example, the tenth element of this vector - task\_family(10) - equals 1, meaning that the 10th model is in family number 1. We can then run the family analysis:
+To define which of the 28 models should be in which family, we will create a vector called task\_family where element j is the family for the j'th model. For example, the tenth element of this vector - task\_family(10) - equals 2, meaning that the 10th model is in family number 2. We can then run the family analysis:
 
 \begin{lstlisting}[style=Matlab-editor,caption=Family comparison]
-% Load the result from the comparison of 112 reduced models
+% Load the result from the comparison of 28 reduced models
 load('../analyses/BMA_BC_112models.mat');
 
-% Compare families
+% Group models into families and compare
 [BMA_fam_task,fam_task] = spm_dcm_peb_bmc_fam(BMA, BMR, templates.task_family, 'ALL');
 \end{lstlisting}
 
-This function (spm\_dcm\_peb\_bmc\_fam) computes probabilities for each family of models, as well as an updated BMA under the prior that each family is equally likely. The outputs of the analysis above (BMA,BMR) form the inputs to spm\_dcm\_peb\_bmc\_fam, as well as the definition of which model should be assigned to which family (templates.task\_family). The final input `ALL' selects how to generate the BMA. The options are `ALL' (compute the BMA over all models), `WINNING' (compute the BMA over models in the winning family) or `NONE' (don't average). 
+This function (spm\_dcm\_peb\_bmc\_fam) computes probabilities for each family of models, as well as an updated BMA under the prior that each family is equally likely. The outputs of the model comparison in the previous section (BMA,BMR) form the inputs to spm\_dcm\_peb\_bmc\_fam, as well as the definition of which model should be assigned to which family (templates.task\_family). The final input `ALL' selects how to generate the BMA. The options are `ALL' (compute the BMA over all models), `WINNING' (compute the BMA over models in the winning family) or `NONE' (don't average). 
 
-The results are shown in Figure \ref{Fig_peb_family_analysis}. The top left shows the posterior probability for each family as explanations for the commonalities across subjects (the 4 rows) and the differences among subjects due to LI (the 4 columns). This shows that the best combination, with 85\% probability, is Family 1 for the commonalities (both words and pictures) and Family 2 for the LI differences (words only). Therefore, we may conclude that this brain network was modulated by both words and pictures, but only the modulation by words is needed to explain LI differences. The top right plot shows the updated posterior probabilities over models given the family definitions, and this is summed over rows and columns in the middle plots. The bottom left plot shows the assignment of each model to each family (where the first family is black and the last is white). The bottom right plot shows the models which contributed to the BMA, which as above, can be viewed using the review tool (spm\_dcm\_peb\_review).
+The results are shown in Figure \ref{Fig_peb_family_analysis}. The top left shows the posterior probability for each family as explanations for the commonalities across subjects (the four rows) and the differences among subjects due to LI (the four columns). This shows that the best combination, with 86\% probability, is Family 1 for the commonalities (both words and pictures) and Family 2 for the LI differences (words only). Therefore, we may conclude that this brain network was modulated by both words and pictures, but only the modulation by words is needed to explain LI differences. The top right plot shows the updated posterior probabilities over models given the family definitions, and this is summed over rows and columns in the middle plots. The bottom left plot shows the assignment of each model to each family (where the first family is black and the last is white). The bottom right plot shows the models which contributed to the BMA, which as above, can be viewed using the review tool (spm\_dcm\_peb\_review).
 
 \begin{figure}[ht]
 \begin{center}
-\includegraphics{"Fig_peb_family_analysis"}
+\includegraphics[width=10cm]{"Fig_peb_family_analysis"}
 \caption{Output from spm\_dcm\_peb\_bmc\_fam when comparing families of models.\label{Fig_peb_family_analysis}}
 \end{center}
 \end{figure}
 
 \subsubsection{Prediction: Cross-validation}
-The consistent result across these analyses is that the modulation of self-inhibition in region rdF by word stimuli was correlated with subjects' LI score. Our final question is whether the effect size was large enough to predict a left-out subject's LI, based on their connectivity. To test this we build a PEB model on all subjects bar one, try to predict the left-out subject's LI, and then repeat with the next subject. This is done as follows:
+The consistent result across these analyses is that the modulation of self-inhibition in region rdF by word stimuli was correlated with subjects' LI score. Our final question is whether the effect size was large enough to predict a left-out subject's LI, based on their connectivity. To test this we will build a PEB model on all subjects bar one, try to predict the left-out subject's LI, and then repeat with the next subject. This is done as follows:
 
 \begin{lstlisting}[style=Matlab-editor,caption=Cross-validation]
 [qE,qC,Q] = spm_dcm_loo(GCM,M,{'B(4,4,3)'});
@@ -794,7 +799,7 @@ How much explained variance is enough to be useful has no clear answer. As a rul
 \item Do nothing. We usually draw conclusions at the group level, and it is quite typical that some subjects don't show experimental effects. By including these subjects in the group-level analysis, the between-subject variability is properly represented in the analysis.
 \item Revisit timeseries extraction. It may be that some subjects had their experimental effects located in different brain areas than expected - for example, because they were using different cognitive strategies, or due to individual differences in anatomy. This can be checked by viewing the results of their first level SPM analysis, to see if the coordinates  selected for timeseries extraction overlapped with experimental effects. 
 \item Revisit DCM model specification. It may be that a better model of the data would do better for these subjects. One strategy is to simplify the model - include the minimum number of brain regions and connections to see if you can get a model to fit the data.
-\item Re-estimate with empirical priors. Getting the parameters into the right range before estimation can help to rescue troublesome subjects. You can try re-starting model estimation, using the estimated group-average connection strengths as priors. Replacing spm\_dcm\_fit with spm\_dcm\_peb\_fit will do this for you - but note that this can take a long time (every subject will be estimated up to 4 times).
+\item Re-estimate with empirical priors. Getting the parameters into the right range before estimation can help to rescue troublesome subjects. You can try re-starting model estimation, using the estimated group-average connection strengths as priors. Replacing spm\_dcm\_fit with spm\_dcm\_peb\_fit will do this for you - but note that this can take a long time (every subject's DCM will be estimated up to 4 times).
 
 \end{enumerate}
 

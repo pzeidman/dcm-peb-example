@@ -15,47 +15,44 @@ M.Q      = 'all';
 M.X      = X;
 M.Xnames = X_labels;
 M.maxit  = 256;
-%% Build PEB (using B,C parameters)
-[PEB_BC,RCM_BC] = spm_dcm_peb(GCM,M,{'B','C'});
-save('../analyses/PEB_BC.mat','PEB_BC','RCM_BC');
+%% Build PEB (using B parameters)
+[PEB_B,RCM_B] = spm_dcm_peb(GCM,M,{'B'});
+save('../analyses/PEB_B.mat','PEB_B','RCM_B');
 %% Automatic search
-BMA_BC = spm_dcm_peb_bmc(PEB_BC);
-save('../analyses/BMA_search_B.mat','BMA_BC');     
-%% Hypothesis-based analysis (B,C)
+BMA_B = spm_dcm_peb_bmc(PEB_B);
+save('../analyses/BMA_search_B.mat','BMA_B');     
+%% Hypothesis-based analysis (B)
 
 % Load estimated PEB
-load('../analyses/PEB_BC.mat');
+load('../analyses/PEB_B.mat');
 
 % Load template models
 templates = load('../analyses/GCM_templates.mat');
 
 % Run model comparison
-[BMA,BMR] = spm_dcm_peb_bmc(PEB_BC, templates.GCM);
+[BMA,BMR] = spm_dcm_peb_bmc(PEB_B, templates.GCM);
 
-% Show connections in winning model 31
-BMA.Kname(BMA.K(31,:)==1)
+% Show connections in winning model 4
+BMA.Kname(BMA.K(4,:)==1)
 
-% Show connections in winning model 69
-BMA.Kname(BMA.K(69,:)==1)
+% Show connections in winning model 15
+BMA.Kname(BMA.K(15,:)==1)
 
-save('../analyses/BMA_BC_112models.mat','BMA','BMR');
+save('../analyses/BMA_B_28models.mat','BMA','BMR');
 
 %% Family analysis
 
-% Load the result from the comparison of 112 reduced models
-load('../analyses/BMA_BC_112models.mat');
+% Load the result from the comparison of 28 reduced models
+load('../analyses/BMA_B_28models.mat');
 
 % Compare families
 [BMA_fam_task,fam_task] = spm_dcm_peb_bmc_fam(BMA, BMR, templates.task_family, 'ALL');
-
-[BMA_fam_c,fam_c]       = spm_dcm_peb_bmc_fam(BMA, BMR, templates.c_family, 'NONE');
 
 [BMA_fam_b_dv,fam_b_dv] = spm_dcm_peb_bmc_fam(BMA, BMR, templates.b_dv_family, 'NONE');
 
 [BMA_fam_b_lr,fam_b_lr] = spm_dcm_peb_bmc_fam(BMA, BMR, templates.b_lr_family, 'NONE');
 
 save('../analyses/BMA_fam_task.mat','BMA_fam_task','fam_task');
-save('../analyses/BMA_fam_c.mat','BMA_fam_c','fam_c');
 save('../analyses/BMA_fam_b_dv.mat','BMA_fam_b_dv','fam_b_dv');
 save('../analyses/BMA_fam_b_lr.mat','BMA_fam_b_lr','fam_b_lr');
 %% LOO
