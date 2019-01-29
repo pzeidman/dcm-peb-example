@@ -10,7 +10,7 @@
 % Then run the code below.
 
 %% Load GCM
-GCM=load('../analyses/GCM_full.mat');
+GCM=load('../analyses/GCM_two_models_pre_estimated.mat');
 GCM=GCM.GCM;
 load('../design_matrix.mat','X');
 %% Show inputs matrix U and timeseries matrix Y. (Part 1, Figure 2)
