@@ -5,6 +5,12 @@ dm = load('../design_matrix.mat');
 X        = dm.X;
 X_labels = dm.labels;
 
+% Import downloaded GCM file if needed
+if ~exist('../analyses/GCM_full.mat','file')
+    copyfile('../analyses/GCM_full_pre_estimated.mat', ...
+        '../analyses/GCM_full.mat');
+end
+
 % Load GCM
 GCM=load('../analyses/GCM_full.mat');
 GCM=GCM.GCM;
