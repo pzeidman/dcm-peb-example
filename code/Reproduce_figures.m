@@ -118,7 +118,7 @@ hold on;
 x     = (1:length(DCM.U.u))*DCM.U.dt;
 plot(x,full(DCM.U.u(:,1)),'Color',[0.2 0.2 0.2]);
 %% Report explained variance across subjects  
-GCM_diagnostics = spm_dcm_fmri_check(GCM(:,1));
+GCM_diagnostics = spm_dcm_fmri_check(GCM);
 exp_var = cellfun(@(x)x.diagnostics(1),GCM_diagnostics);
 fprintf('Mean explained variance: %2.2f std: %2.2f\n',mean(exp_var),std(exp_var));
 %% Covariance components (Part 1, Figure A.1)
@@ -277,14 +277,14 @@ set(gca,'FontSize',12);
 colormap gray;
 
 subplot(2,3,3);
-bar(Pp_common); ylim([0 1]); xlim([0 115]);
+bar(Pp_common); ylim([0 1]); xlim([0 size(Pp_common,1)]);
 axis square;
 xlabel('Model'); ylabel('Probability');
 title('Commonalities','FontSize',16);
 set(gca,'FontSize',12);
 
 subplot(2,3,4);
-bar(Pp_diff);  ylim([0 1]); xlim([0 115]);
+bar(Pp_diff);  ylim([0 1]); xlim([0 size(Pp_common,1)]);
 axis square;
 xlabel('Model');  ylabel('Probability');
 title('Differences (LI)','FontSize',16);
