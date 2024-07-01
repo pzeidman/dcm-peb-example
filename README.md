@@ -1,5 +1,5 @@
 # Step-by-step guide to DCM for fMRI and PEB
-This step-by-step guide accompanies a pair of tutorial papers on group effective connectivity analysis, published in NeuroImage (see below). The guide walks through a DCM for fMRI analysis and testing hypotheses at the group level using PEB. 
+This step-by-step guide accompanies a pair of tutorial papers on group effective connectivity analysis, published in NeuroImage (see links below). The guide walks through a DCM for fMRI analysis and testing hypotheses at the group level using PEB. 
 
 ## The papers
 You may wish to start with the theory papers, which explain how each step in the analysis works:
